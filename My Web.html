@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WallPixxWorld</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Open Sans', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+      transition: background 0.3s, color 0.3s;
+      flex: 1 0 auto;
+    }
+    main {
+      max-width: 1000px;
+      margin: auto;
+      padding: 1rem;
+      flex: 1 0 auto;
+    }
+    footer {
+      background: #000;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+      flex-shrink: 0;
+      position: relative;
+    }
+    body.light-mode footer {
+      background: var(--primary);
+      color: #fff;
+    }
+    :root {
+      --bg-dark: #121212;
+      --bg-light: #fff;
+      --text-dark: #eee;
+      --text-light: #111;
+      --primary: #1e88e5;
+      --error: #e53935;
+    }
+    body.light-mode {
+      background: var(--bg-light);
+      color: var(--text-light);
+    }
+    header {
+      background: #000;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+      position: relative;
+    }
+    body.light-mode header {
+      background: var(--primary);
+      color: #fff;
+    }
+    button {
+      background: var(--primary);
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      margin: 0.3rem 0;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover {
+      background: #1565c0;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.4rem;
+      margin: 0.3rem 0 0.6rem 0;
+      border-radius: 5px;
+      border: 1px solid #333;
+      font-size: 1rem;
+    }
+    body.light-mode input, body.light-mode select, body.light-mode textarea {
+      border-color: #aaa;
+    }
+    .wallpaper-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(160px,1fr));
+      gap: 10px;
+    }
+    .wallpaper-card {
+      background: #222;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      color: #eee;
+      user-select: none;
+    }
+    body.light-mode .wallpaper-card {
+      background: #f0f0f0;
+      color: #111;
+    }
+    .wallpaper-card img {
+      width: 100%;
+      display: block;
+      aspect-ratio: 9 / 16;
+      object-fit: cover;
+    }
+    .wallpaper-card .info {
+      padding: 0.5rem;
+      font-size: 14px;
+    }
+    .wallpaper-card button.download-btn {
+      width: 100%;
+      border-radius: 0 0 10px 10px;
+      font-weight: bold;
+      background: #43a047;
+    }
+    .wallpaper-card button.delete-btn {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: var(--error);
+      padding: 5px 8px;
+      font-size: 12px;
+      border-radius: 6px;
+      display: none;
+    }
+    .wallpaper-card.admin .delete-btn {
+      display: block;
+    }
+    .category-filters {
+      position: relative;
+      display: inline-block;
+    }
+    .dropbtn {
+      background: #333;
+      font-size: 14px;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #333;
+      min-width: 160px;
+      max-height: 300px;
+      overflow-y: auto;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .dropdown-content button {
+      color: white;
+      background-color: #444;
+      margin: 5px 0;
+      padding: 8px 12px;
+      text-align: left;
+      width: 100%;
+      border-radius: 4px;
+    }
+    .dropdown-content button:hover {
+      background-color: #555;
+    }
+    .dropdown-content.show {
+      display: block;
+    }
+    .search-input {
+      padding: 0.5rem;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+    .hidden {
+      display: none !important;
+    }
+    .fav-btn {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      font-size: 20px;
+      color: #bbb;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s;
+    }
+    .fav-btn.fav {
+      color: #e53935;
+      text-shadow: 0 0 6px #e53935;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-container" style="display:inline-block; vertical-align: middle; margin-right: 10px; width: 50px;">
+      <svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto;">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#4e54c8; stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#8f94fb; stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <rect width="300" height="100" fill="black" rx="20" />
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+              font-family="Open Sans, Helvetica, sans-serif"
+              font-weight="bold"
+              font-size="70"
+              fill="url(#grad)"
+              letter-spacing="10">
+          WPxxW
+        </text>
+      </svg>
+    </div>
+    <h1 style="display:inline-block; vertical-align: middle;"></h1>
+    <h1>WallPixxWorld</h1>
+  </header>
+
+  <main>
+    <section class="upload-section" id="uploadSection" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <label for="fileUpload" style="flex: 1; min-width: 180px;">
+        <input type="file" id="fileUpload" accept="image/*" style="width: 100%;" />
+      </label>
+      <button id="btnUpload" style="flex-shrink: 0; height: 38px; padding: 0 1rem; margin-left: 0;">Upload Wallpaper</button>
+      <select id="categorySelect" style="flex: 1; min-width: 150px;">
+        <option value="nature">Nature</option>
+        <option value="anime">Anime</option>
+        <option value="cars">Cars</option>
+        <option value="sketches">Sketches</option>
+        <option value="abstract">Abstract</option>
+        <option value="urban">Urban</option>
+        <option value="space">Space</option>
+        <option value="animals">Animals</option>
+        <option value="food">Food</option>
+        <option value="minimal">Minimal</option>
+        <option value="technology">Technology</option>
+        <option value="sports">Sports</option>
+        <option value="nudity">Nudity (18+)</option>
+        <option value="sketchy">Sketchy / Experimental</option>
+        <option value="music">Music</option>
+        <option value="other">Other</option>
+      </select>
+      <textarea id="tagsInput" placeholder="Add tags separated by commas (e.g., sky,forest,blue,....)"></textarea>
+    </section>
+
+    <div class="category-filters" id="categoryFilters">
+      <button onclick="toggleDropdown()" class="dropbtn">Categories ▼</button>
+      <div id="categoryDropdown" class="dropdown-content">
+        <button data-category="all">All</button>
+        <button data-category="nature">Nature</button>
+        <button data-category="anime">Anime</button>
+        <button data-category="cars">Cars</button>
+        <button data-category="sketches">Sketches</button>
+        <button data-category="abstract">Abstract</button>
+        <button data-category="urban">Urban</button>
+        <button data-category="space">Space</button>
+        <button data-category="animals">Animals</button>
+        <button data-category="food">Food</button>
+        <button data-category="minimal">Minimal</button>
+        <button data-category="technology">Technology</button>
+        <button data-category="sports">Sports</button>
+        <button data-category="nudity">Nudity (18+)</button>
+        <button data-category="sketchy">Sketchy / Experimental</button>
+        <button data-category="music">Music</button>
+        <button data-category="other">Other</button>
+      </div>
+    </div>
+
+    <input type="search" id="searchInput" placeholder="Search wallpapers by tags or name..." class="search-input" />
+
+    <div class="wallpaper-grid" id="wallpaperGrid">
+      <div id="slideshow" style="max-width: 600px; margin: 2rem auto; position: relative; overflow: hidden; border-radius: 10px; box-shadow: 0 0 10px #000;">
+        <img id="slideImage" src="images/image1.jpg" alt="Slideshow Image" style="width: 100%; display: block; border-radius: 10px;" />
+        <button id="prevBtn" style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 18px; padding: 8px 12px; cursor: pointer; border-radius: 5px;">&#10094;</button>
+        <button id="nextBtn" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; font-size: 18px; padding: 8px 12px; cursor: pointer; border-radius: 5px;">&#10095;</button>
+      </div>
+    </div>
+
+    <button id="loadMoreBtn" style="margin: 1rem auto; display: block;">Load More</button>
+  </main>
+
+  <footer>
+    <p>WallPixxWorld © 2025 — Created by Hopkins</p>
+    <p>Contact: hopkinsmingo04@gmail.com | Phone: +265 897 991 659</p>
+    <p>Address: Area 21, Lilongwe, Malawi</p>
+    <p>EST 2025</p>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB2xOTEIw4eDedu_OBkU56S-6X-Dz5lPIU",
+      authDomain: "wallpixword.firebaseapp.com",
+      projectId: "wallpixword",
+      storageBucket: "wallpixword.firebasestorage.app",
+      messagingSenderId: "18645783134",
+      appId: "1:18645783134:web:58775c4d6b94440a889acf",
+      measurementId: "G-M7RF19YHM9"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const images = [
+      'images/image1.jpg',
+    ];
+
+    let currentIndex = 0;
+    const slideImage = document.getElementById('slideImage');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function showImage(index) {
+      currentIndex = (index + images.length) % images.length;
+      slideImage.src = images[currentIndex];
+    }
+
+    prevBtn.addEventListener('click', () => showImage(currentIndex - 1));
+    nextBtn.addEventListener('click', () => showImage(currentIndex + 1));
+    setInterval(() => showImage(currentIndex + 1), 5000);
+    showImage(currentIndex);
+
+    // Dropdown toggle function
+    function toggleDropdown() {
+      document.getElementById("categoryDropdown").classList.toggle("show");
+    }
+
+    // Optional: Close dropdown when clicking outside
+    window.onclick = function(e) {
+      if (!e.target.matches('.dropbtn')) {
+        const dropdown = document.getElementById("categoryDropdown");
+        if (dropdown.classList.contains('show')) {
+          dropdown.classList.remove('show');
+        }
+      }
+    };
+  </script>
+</body>
+</html>
