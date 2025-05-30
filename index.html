@@ -221,6 +221,7 @@
   </header>
 
   <main>
+    <input type="search" id="searchInput" placeholder="Search wallpapers by tags or name..." class="search-input" />
     <section class="upload-section" id="uploadSection" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
       <label for="fileUpload" style="flex: 1; min-width: 180px;">
         <input type="file" id="fileUpload" accept="image/*" style="width: 100%;" />
@@ -270,8 +271,7 @@
       </div>
     </div>
 
-    <input type="search" id="searchInput" placeholder="Search wallpapers by tags or name..." class="search-input" />
-
+  
     <div class="wallpaper-grid" id="wallpaperGrid">
       <div id="slideshow" style="max-width: 600px; margin: 2rem auto; position: relative; overflow: hidden; border-radius: 10px; box-shadow: 0 0 10px #000;">
         <img id="slideImage" src="images/image1.jpg" alt="Slideshow Image" style="width: 100%; display: block; border-radius: 10px;" />
